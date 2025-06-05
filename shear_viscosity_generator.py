@@ -142,7 +142,10 @@ def main(ranSeed: int, number_of_eta_s: int) -> None:
     with open("shearPCA.pickle", "wb") as f:
         pickle.dump(pca, f)
 
+    with open("shearPCAChain.pickle", "wb") as f:
+        pickle.dump(PCs, f)
+
 if __name__ == "__main__":
     ranSeed = 23
-    number_of_eta_s = 2000
+    number_of_eta_s = 10000
     main(ranSeed, number_of_eta_s)

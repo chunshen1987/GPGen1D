@@ -161,9 +161,11 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
     with open("bulkPCA.pickle", "wb") as f:
         pickle.dump(pca, f)
 
+    with open("bulkPCAChain.pickle", "wb") as f:
+        pickle.dump(PCs, f)
 
 
 if __name__ == "__main__":
     ranSeed = 23
-    number_of_zeta_s = 2000
+    number_of_zeta_s = 10000
     main(ranSeed, number_of_zeta_s)
