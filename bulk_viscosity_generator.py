@@ -148,7 +148,7 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
     #plt.show()
 
     # check the distribution for PCs
-    pca = PCATransformation(0.95)
+    pca = PCATransformation(0.90)
     PCs = pca.fit_transform(zeta_s_set)
     print(f"Number of components = {PCs.shape[1]}")
     print(PCs.min(axis=0), PCs.max(axis=0))
@@ -167,5 +167,5 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
 
 if __name__ == "__main__":
     ranSeed = 23
-    number_of_zeta_s = 10000
+    number_of_zeta_s = 100000
     main(ranSeed, number_of_zeta_s)
