@@ -198,7 +198,7 @@ def main(ranSeed: int, number_of_EoS: int, min_T_mask_region: float,
 
     iSuccess = 0
     iter = 0
-    nsamples_per_batch = 1000
+    nsamples_per_batch = 10000
     while iSuccess < number_of_EoS:
         PoverT4_GP = gpr.sample_y(T_GP, nsamples_per_batch,
                                   random_state=randomness).transpose()
@@ -268,20 +268,20 @@ def main(ranSeed: int, number_of_EoS: int, min_T_mask_region: float,
                 compute_speed_of_sound_square(T_plot, EOS_set[EoS_chosen])))
         np.savetxt(f"EoS{EoS_chosen}.dat", data)
 
-    # invert the EoS tables
-    e_list_EoS = []
-    P_list_EoS = []
-    T_list_EoS = []
-    for i in range(number_of_EoS):
-        if (i+1) % 100 == 0:
-            print(f"Inverting EoS table {i+1}/{number_of_EoS}")
-        e_list, P_list, T_list = invert_EoS_tables(T_plot, EOS_set[i])
-        e_list_EoS.extend([e_list])
-        P_list_EoS.extend([P_list])
-        T_list_EoS.extend([T_list])
+    ## invert the EoS tables
+    #e_list_EoS = []
+    #P_list_EoS = []
+    #T_list_EoS = []
+    #for i in range(number_of_EoS):
+    #    if (i+1) % 100 == 0:
+    #        print(f"Inverting EoS table {i+1}/{number_of_EoS}")
+    #    e_list, P_list, T_list = invert_EoS_tables(T_plot, EOS_set[i])
+    #    e_list_EoS.extend([e_list])
+    #    P_list_EoS.extend([P_list])
+    #    T_list_EoS.extend([T_list])
 
-    # write the EoS to a file
-    EoS_file_writer(e_list_EoS, P_list_EoS, T_list_EoS, f"EoS.pkl")
+    ## write the EoS to a file
+    #EoS_file_writer(e_list_EoS, P_list_EoS, T_list_EoS, f"EoS.pkl")
 
     # check PCA
     plt.figure()
@@ -423,7 +423,7 @@ def main(ranSeed: int, number_of_EoS: int, min_T_mask_region: float,
 
 if __name__ == "__main__":
     ranSeed = 23
-    number_of_EoS = 2000
+    number_of_EoS = 100000
     bLogFlag = True
     min_T_mask_region = 0.10
     max_T_mask_region = 0.50
