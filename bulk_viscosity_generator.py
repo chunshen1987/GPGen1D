@@ -161,8 +161,10 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
     with open("bulkPCA.pickle", "wb") as f:
         pickle.dump(pca, f)
 
-    with open("bulkPCAChain.pickle", "wb") as f:
-        pickle.dump(PCs, f)
+    with open("bulkPCAChain_training.pickle", "wb") as f:
+        pickle.dump(PCs[:int(number_of_zeta_s*0.8), :], f)
+    with open("bulkPCAChain_validation.pickle", "wb") as f:
+        pickle.dump(PCs[int(number_of_zeta_s*0.8):, :], f)
 
 
 if __name__ == "__main__":

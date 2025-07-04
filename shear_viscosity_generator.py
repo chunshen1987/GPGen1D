@@ -142,8 +142,11 @@ def main(ranSeed: int, number_of_eta_s: int) -> None:
     with open("shearPCA.pickle", "wb") as f:
         pickle.dump(pca, f)
 
-    with open("shearPCAChain.pickle", "wb") as f:
-        pickle.dump(PCs, f)
+    with open("shearPCAChain_training.pickle", "wb") as f:
+        pickle.dump(PCs[0:int(number_of_eta_s*0.8), :], f)
+    with open("shearPCAChain_validation.pickle", "wb") as f:
+        pickle.dump(PCs[int(number_of_eta_s*0.8):, :], f)
+
 
 if __name__ == "__main__":
     ranSeed = 23

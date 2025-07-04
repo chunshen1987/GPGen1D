@@ -361,8 +361,10 @@ def main(ranSeed: int, number_of_EoS: int, min_T_mask_region: float,
     with open("EoSPCA.pickle", "wb") as f:
         pickle.dump(pca, f)
 
-    with open("EoSPCAChain.pickle", "wb") as f:
-        pickle.dump(PCs, f)
+    with open("EoSPCAChain_training.pickle", "wb") as f:
+        pickle.dump(PCs[:int(0.8*number_of_EoS), :], f)
+    with open("EoSPCAChain_validation.pickle", "wb") as f:
+        pickle.dump(PCs[int(0.8*number_of_EoS):, :], f)
 
     # Compute the 90% prior for the shear viscosity from the eta_s_set for each T
     hotQCD_T = validation_data[::4, 0]
