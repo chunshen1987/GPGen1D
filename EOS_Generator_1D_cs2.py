@@ -66,7 +66,7 @@ def EoS_file_writer(eos_set, filename):
     neos, ne, nvar = eos_set.shape
     EoS_dict = {}
     for ieos in range(neos):
-        EoS_dict[f'{ieos:04}'] = eos_set[ieos].astype(np.float32)
+        EoS_dict[f'{ieos:04}'] = eos_set[ieos][:, [0, 1, 3]].astype(np.float32)
     with open(filename, 'wb') as f:
         pickle.dump(EoS_dict, f)
 
