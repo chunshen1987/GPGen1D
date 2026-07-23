@@ -18,9 +18,9 @@ def zeta_s_file_writer(T, zeta_s, filename) -> None:
         for each zeta_s. The different columns are: T, zeta_s
     """
     zeta_s_dict = {}
-    for zs in range(len(zeta_s)):
+    for zs in range(min(1000, len(zeta_s))):
         data = np.column_stack((T, zeta_s[zs]))
-        zeta_s_dict[f'{zs:04}'] = data
+        zeta_s_dict[f'{zs:04}'] = data.astype(np.float32)
     with open(filename, 'wb') as f:
         pickle.dump(zeta_s_dict, f)
 
@@ -169,5 +169,5 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
 
 if __name__ == "__main__":
     ranSeed = 23
-    number_of_zeta_s = 100000
+    number_of_zeta_s = 10000
     main(ranSeed, number_of_zeta_s)

@@ -18,9 +18,9 @@ def eta_s_file_writer(T, eta_s, filename):
         for each eta_s. The different columns are: T, eta_s
     """
     eta_s_dict = {}
-    for es in range(len(eta_s)):
+    for es in range(min(1000, len(eta_s))):
         data = np.column_stack((T, eta_s[es]))
-        eta_s_dict[f'{es:04}'] = data
+        eta_s_dict[f'{es:04}'] = data.astype(np.float32)
     with open(filename, 'wb') as f:
         pickle.dump(eta_s_dict, f)
 
@@ -41,8 +41,8 @@ def main(ranSeed: int, number_of_eta_s: int) -> None:
     T_GP = np.linspace(T_min, T_max, 100).reshape(-1, 1)
     T_plot = T_GP.flatten()
 
-    correlation_length_min = 0.05
-    correlation_length_max = 0.20
+    correlation_length_min = 0.10
+    correlation_length_max = 0.40
 
     eta_s_set = []
     nsamples_per_batch = max(1, int(number_of_eta_s/100))
@@ -150,5 +150,5 @@ def main(ranSeed: int, number_of_eta_s: int) -> None:
 
 if __name__ == "__main__":
     ranSeed = 23
-    number_of_eta_s = 100000
+    number_of_eta_s = 10000
     main(ranSeed, number_of_eta_s)
