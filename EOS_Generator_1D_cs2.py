@@ -101,7 +101,7 @@ def main(ranSeed: int, number_of_EoS: int, min_e_mask_region: float,
 
     # print out the minimum and maximum values of the training data x_values
     e_min = np.min(training_data[:, 0])  # the min of actual data points
-    e_max = transform_e(1e4)
+    e_max = transform_e(3e3)
     print(f"Minimum of the datapoints is: {e_min}")
     print(f"Maximum of the datapoints is: {e_max}")
 
@@ -112,8 +112,9 @@ def main(ranSeed: int, number_of_EoS: int, min_e_mask_region: float,
         randomness = np.random.seed()
 
     # define GP kernel
-    #kernel = RBF(length_scale=0.05, length_scale_bounds=(1e-2, 10))
-    kernel = 1 * Matern(length_scale=0.05, length_scale_bounds=(1e-2, 10), nu=3/2)
+    #kernel = 1 * RBF(length_scale=0.05, length_scale_bounds=(1e-2, 10))
+    kernel = 1 * Matern(length_scale=0.05, length_scale_bounds=(1e-2, 10),
+                        nu=3/2)
     gpr = GaussianProcessRegressor(kernel=kernel, alpha=1e-4)
 
     x_train = training_data[:, 0].reshape(-1, 1)
@@ -215,6 +216,35 @@ def main(ranSeed: int, number_of_EoS: int, min_e_mask_region: float,
     plt.ylabel(r"$s/e^{3/4}$")
     plt.show()
 
+    # plot T vs e
+    plt.figure()
+    T_low, T_high = np.percentile(
+        EOS_set[:, :, 3], [50-95/2., 50+95/2.], axis=0)
+    plt.fill_between(EOS_set[0, :, 0], T_low, T_high,
+                     color='g', alpha=0.2, label="95% CI")
+    for i in range(20):
+        plt.plot(EOS_set[i, :, 0], EOS_set[i, :, 3], '-k', zorder=1)
+    plt.scatter(hotQCDEoS[:, 0], hotQCDEoS[:, 3],
+                marker='+', color='b', s=20, label="lattice EOS")
+
+    plt.xscale('log')
+    plt.xlim([0.05, 1000.])
+    plt.xlabel(r"$e$ (GeV/fm$^3$)")
+    plt.ylabel(r"$T$ (GeV)")
+    plt.show()
+
+    # plot cs2 vs T
+    plt.figure()
+    for i in range(20):
+        plt.plot(EOS_set[i, :, 3], EOS_set[i, :, 4], '-k', zorder=1)
+    plt.scatter(hotQCDEoS[:-1, 3], hotQCD_cs2,
+                marker='+', color='b', s=20, label="lattice EOS")
+
+    plt.xlim([0.05, 1.])
+    plt.xlabel(r"$T$ (GeV)")
+    plt.ylabel(r"$c_s^2$")
+    plt.show()
+
     # write the EoS to a file
     EoS_file_writer(EOS_set, f"EoS.pkl")
 
@@ -271,6 +301,6 @@ if __name__ == "__main__":
     number_of_EoS = 1000
     min_e_mask_region = 0.20
     use_anchor_point = True
-    anchor_point = np.array([1e5, 0.328]).reshape(-1, 2)   # anchor point for the GP (e, cs^2)
+    anchor_point = np.array([1e5, 0.33]).reshape(-1, 2)   # anchor point for the GP (e, cs^2)
     main(ranSeed, number_of_EoS, min_e_mask_region,
          use_anchor_point, anchor_point)
