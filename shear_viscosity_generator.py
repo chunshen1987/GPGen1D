@@ -27,7 +27,7 @@ def eta_s_file_writer(T, eta_s, filename):
 def main(ranSeed: int, number_of_eta_s: int) -> None:
     # print out the minimum and maximum values of the training data x_values
     T_min = 0.0
-    T_max = 0.5
+    T_max = 1.0
     print(f"Minimum of the datapoints is: {T_min}")
     print(f"Maximum of the datapoints is: {T_max}")
 
@@ -37,20 +37,19 @@ def main(ranSeed: int, number_of_eta_s: int) -> None:
     else:
         randomness = np.random.seed()
 
-
     T_GP = np.linspace(T_min, T_max, 100).reshape(-1, 1)
     T_plot = T_GP.flatten()
 
     correlation_length_min = 0.10
-    correlation_length_max = 0.40
+    correlation_length_max = 0.50
 
     eta_s_set = []
-    nsamples_per_batch = max(1, int(number_of_eta_s/100))
+    nsamples_per_batch = max(1, int(number_of_eta_s/1000))
     progress = 0
     while len(eta_s_set) < number_of_eta_s:
         correlation_length = np.random.uniform(correlation_length_min,
                                                correlation_length_max)
-        print(f"Progress {progress}%, corr len = {correlation_length:.2f} ...")
+        print(f"Progress {progress:.1f}%, corr len = {correlation_length:.2f} ...")
         kernel = RBF(length_scale=correlation_length, length_scale_bounds="fixed")
         gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None)
         eta_s_vs_T_GP = gpr.sample_y(T_plot.reshape(-1, 1), 
@@ -59,12 +58,12 @@ def main(ranSeed: int, number_of_eta_s: int) -> None:
         eta_s_vs_T_GP = transformation(eta_s_vs_T_GP)
         for sample_i in eta_s_vs_T_GP:
             eta_s_set.append(sample_i)
-        progress += 1
+        progress += 0.1
 
     # make verification plots
     plt.figure()
     for i in range(number_of_eta_s):
-        if i%(nsamples_per_batch*5) == 0:
+        if i%(nsamples_per_batch*50) == 0:
             plt.plot(T_plot, eta_s_set[i], '-')
 
     plt.xlim([T_min, T_max])
@@ -72,7 +71,7 @@ def main(ranSeed: int, number_of_eta_s: int) -> None:
     plt.xlabel(r"T [GeV]")
     plt.ylabel(r"$\eta/s$")
     plt.tight_layout()
-    plt.savefig(f"eta_s_samples.png", dpi=600)
+    plt.savefig(f"eta_s_samples.png")
     plt.clf()
 
     # Compute the 90% prior for the shear viscosity from the eta_s_set for each T

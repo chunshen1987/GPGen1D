@@ -27,7 +27,9 @@ def zeta_s_file_writer(T, zeta_s, filename) -> None:
 
 def main(ranSeed: int, number_of_zeta_s: int) -> None:
     T_min = 0.00
-    T_max = 0.50
+    T_max = 1.00
+    T_zeta0 = 0.00
+    T_zeta1 = 0.60
     print(f"Minimum of the datapoints is: {T_min}")
     print(f"Maximum of the datapoints is: {T_max}")
 
@@ -37,8 +39,8 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
     else:
         randomness = np.random.seed()
 
-    Tlow = np.array([T_min])
-    Thigh = np.array([T_max])
+    Tlow = np.array([T_zeta0])
+    Thigh = np.array([T_zeta1])
     expon_low = np.array([-3])
     expon_high = np.array([-3])
 
@@ -46,9 +48,10 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
     training_data = np.concatenate((expon_low, expon_high))
 
     T_plot = np.linspace(T_min, T_max, 100)
+    idxGP = T_plot <= T_zeta1
 
-    correlation_length_min = 0.05
-    correlation_length_max = 0.15
+    correlation_length_min = 0.10
+    correlation_length_max = 0.20
 
     zeta_s_set = []
 
@@ -62,12 +65,14 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
                      length_scale_bounds="fixed")
         gpr = GaussianProcessRegressor(kernel=kernel, optimizer=None)
         gpr.fit(T_GP.reshape(-1, 1), training_data)
-        zeta_s_vs_T_GP = gpr.sample_y(T_plot.reshape(-1, 1),
+        zeta_s_vs_T_GP = gpr.sample_y(T_plot[idxGP].reshape(-1, 1),
                                       nsamples_per_batch,
                                       random_state=randomness).transpose()
         zeta_s_vs_T_GP = transformation(zeta_s_vs_T_GP)
         for sample_i in zeta_s_vs_T_GP:
-            zeta_s_set.append(sample_i)
+            zeta_s_set_i = np.zeros(len(T_plot))
+            zeta_s_set_i[idxGP] = sample_i
+            zeta_s_set.append(zeta_s_set_i)
         progress += 1
 
     # make verification plots
