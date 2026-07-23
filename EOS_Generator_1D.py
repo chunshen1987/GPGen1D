@@ -120,14 +120,14 @@ def invert_EoS_tables(T, P):
     f_p = interpolate.interp1d(T, P, kind='cubic')
 
     e_bounds = [np.max((1e-10, np.min(e))), np.max(e)]
-    e_list = np.linspace(e_bounds[0]**0.25, e_bounds[1]**0.25, 200)**4
+    e_list = np.linspace(e_bounds[0]**0.25, e_bounds[1]**0.25, 1000)**4
 
     T_from_e = []
     for e_local in e_list:
         T_local = binary_search_1d(e_local, f_e, T[0], T[-1])
         T_from_e.append(T_local)
     T_from_e = np.array(T_from_e)
-    return (e_list**0.25, f_p(T_from_e), T_from_e)
+    return (e_list, f_p(T_from_e), T_from_e)
 
 def EoS_file_writer(e, P, T, filename):
     """
@@ -137,7 +137,7 @@ def EoS_file_writer(e, P, T, filename):
     EoS_dict = {}
     for EoS in range(len(e)):
         data = np.column_stack((e[EoS], P[EoS], T[EoS]))
-        EoS_dict[f'{EoS:04}'] = data
+        EoS_dict[f'{EoS:04}'] = data.astype(np.float32)
     with open(filename, 'wb') as f:
         pickle.dump(EoS_dict, f)
 
