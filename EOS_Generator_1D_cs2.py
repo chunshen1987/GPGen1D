@@ -65,7 +65,7 @@ def EoS_file_writer(eos_set, filename):
     """
     neos, ne, nvar = eos_set.shape
     EoS_dict = {}
-    for ieos in range(neos):
+    for ieos in range(min(1000, neos)):
         EoS_dict[f'{ieos:04}'] = eos_set[ieos][:, [0, 1, 3]].astype(np.float32)
     with open(filename, 'wb') as f:
         pickle.dump(EoS_dict, f)
@@ -175,6 +175,34 @@ def main(ranSeed: int, number_of_EoS: int, min_e_mask_region: float,
     plt.ylim([0, 1./3.])
     plt.xlabel(r"$log(e/e_0)$")
     plt.ylabel(r"$c_s^2$")
+    plt.show()
+
+    # plot cs2 vs e
+    plt.figure()
+    cs2_low, cs2_high = np.percentile(
+        EOS_set[:, :, 4], [50-95/2., 50+95/2.], axis=0)
+    plt.fill_between(EOS_set[0, :, 0], cs2_low, cs2_high,
+                     color='g', alpha=0.2, label="95% CI")
+    cs2_low, cs2_high = np.percentile(
+        EOS_set[:, :, 4], [50-90/2., 50+90/2.], axis=0)
+    plt.fill_between(EOS_set[0, :, 0], cs2_low, cs2_high,
+                     color='b', alpha=0.2, label="90% CI")
+    cs2_low, cs2_high = np.percentile(
+        EOS_set[:, :, 4], [50-70/2., 50+70/2.], axis=0)
+    plt.fill_between(EOS_set[0, :, 0], cs2_low, cs2_high,
+                     color='r', alpha=0.2, label="70% CI")
+    for i in range(20):
+        plt.plot(EOS_set[i, :, 0], EOS_set[i, :, 4], '-k', zorder=1)
+    plt.scatter(hotQCD_e, hotQCD_cs2,
+                marker='+', color='b', s=20, label="lattice EOS")
+
+    plt.legend()
+    plt.xscale('log')
+    plt.xlim([0.05, 1000.])
+    plt.ylim([0., 1./3.])
+    plt.xlabel(r"$e$ (GeV/fm$^3$)")
+    plt.ylabel(r"$c_s^2$")
+    plt.savefig("cs2_prior.png")
     plt.show()
 
     # plot P/e vs e
@@ -298,7 +326,7 @@ def main(ranSeed: int, number_of_EoS: int, min_e_mask_region: float,
 
 if __name__ == "__main__":
     ranSeed = 23
-    number_of_EoS = 1000
+    number_of_EoS = 100000
     min_e_mask_region = 0.20
     use_anchor_point = True
     anchor_point = np.array([1e5, 0.33]).reshape(-1, 2)   # anchor point for the GP (e, cs^2)

@@ -169,5 +169,5 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
 
 if __name__ == "__main__":
     ranSeed = 23
-    number_of_zeta_s = 10000
+    number_of_zeta_s = 100000
     main(ranSeed, number_of_zeta_s)
